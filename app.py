@@ -3,7 +3,6 @@ import re
 from collections import Counter
 
 # --- CONFIGURAÇÃO DA INTERFACE STREAMLIT ---
-# (Esta linha DEVE vir antes de qualquer outro comando do Streamlit, incluindo @st.cache_resource)
 st.set_page_config(page_title="NLP Lab - Aula 8", page_icon="🧠", layout="wide")
 
 # Importando as bibliotecas obrigatórias de PLN
@@ -16,7 +15,6 @@ def iniciar_recursos_nltk():
     nltk.download('punkt', quiet=True)
     nltk.download('stopwords', quiet=True)
     try:
-        # Apenas um fallback pro safety run no Render
         nltk.download('punkt_tab', quiet=True)
     except: pass
     from nltk.corpus import stopwords
@@ -55,10 +53,20 @@ st.markdown("""
 st.markdown('<div class="main-title">🧠 Laboratório Avançado de PLN — Solução Integrada (Aula 8)</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Aplicação fullstack interativa desenvolvida com Streamlit, NLTK e spaCy.</div>', unsafe_allow_html=True)
 
-tabs = st.tabs([f"Exercício {i}" for i in range(1, 11)])
+# --- MENU DE NAVEGAÇÃO LATERAL ---
+st.sidebar.header("📂 Menu de Exercícios")
+opcao = st.sidebar.radio(
+    "Selecione a atividade desejada:",
+    [f"Atividade {i}" for i in range(1, 11)]
+)
+st.sidebar.divider()
+st.sidebar.info("Navegue pelo menu acima para alternar entre os exercícios. O estado da página será mantido.")
 
-# ATIVIDADE 1
-with tabs[0]:
+# ==========================================
+# RENDERIZAÇÃO CONDICIONAL DOS EXERCÍCIOS
+# ==========================================
+
+if opcao == "Atividade 1":
     st.subheader("Atividade 1: Análise de Sentimentos por Palavras-Chave")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Uma empresa de marketing precisa identificar rapidamente se comentários de clientes são positivos ou negativos.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Crie um sistema simples de análise de sentimentos baseado em palavras-chave.</div>', unsafe_allow_html=True)
@@ -86,8 +94,7 @@ with tabs[0]:
                 else:
                     st.warning("🟡 Sentimento: NEUTRO (Empate entre palavras positivas e negativas).")
 
-# ATIVIDADE 2
-with tabs[1]:
+elif opcao == "Atividade 2":
     st.subheader("Atividade 2: Tokenização Avançada")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Um e-commerce recebe milhares de avaliações e precisa separar palavras importantes para análise.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Use tokenização para quebrar avaliações em palavras.</div>', unsafe_allow_html=True)
@@ -100,8 +107,7 @@ with tabs[1]:
             tokens_list = nltk.word_tokenize(txt_2)
             st.json(tokens_list)
 
-# ATIVIDADE 3
-with tabs[2]:
+elif opcao == "Atividade 3":
     st.subheader("Atividade 3: Classificador Temático (Banco Digital)")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Um banco digital precisa identificar solicitações como “bloquear cartão” ou “segunda via de boleto”.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Crie um classificador simples baseado em palavras-chave.</div>', unsafe_allow_html=True)
@@ -121,8 +127,7 @@ with tabs[2]:
             else: 
                 st.warning("❓ Setor: Atendimento Geral (Não identificamos palavras-chave de setores específicos).")
 
-# ATIVIDADE 4
-with tabs[3]:
+elif opcao == "Atividade 4":
     st.subheader("Atividade 4: Remoção de Stopwords (NLTK)")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Uma empresa quer remover palavras irrelevantes de textos para melhorar análise de dados.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Remova stopwords de um texto usando NLTK.</div>', unsafe_allow_html=True)
@@ -138,8 +143,7 @@ with tabs[3]:
                 st.info("ℹ️ Nenhuma stopword foi encontrada ou removida do texto original.")
             st.code(" ".join(filtrados), language="text")
 
-# ATIVIDADE 5
-with tabs[4]:
+elif opcao == "Atividade 5":
     st.subheader("Atividade 5: Detector de Reclamações")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Uma equipe de suporte quer identificar reclamações automaticamente em mensagens de clientes.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Detecte palavras negativas como “ruim”, “erro”, “péssimo”.</div>', unsafe_allow_html=True)
@@ -157,8 +161,7 @@ with tabs[4]:
             else:
                 st.success("✅ Mensagem analisada e classificada como normal (Nenhum termo de reclamação mapeado foi identificado).")
 
-# ATIVIDADE 6
-with tabs[5]:
+elif opcao == "Atividade 6":
     st.subheader("Atividade 6: Simulação de NER (spaCy)")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Um sistema precisa identificar nomes de pessoas e empresas em documentos automaticamente.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Simule extração de entidades (NER) usando spaCy.</div>', unsafe_allow_html=True)
@@ -174,8 +177,7 @@ with tabs[5]:
             else:
                 st.info("🔍 Análise concluída: Nenhuma entidade (Pessoa, Organização ou Local) foi reconhecida no texto pelo modelo.")
 
-# ATIVIDADE 7
-with tabs[6]:
+elif opcao == "Atividade 7":
     st.subheader("Atividade 7: Frequência de Palavras")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Uma rede social quer entender quais palavras aparecem mais em comentários de uma postagem viral.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Calcule frequência de palavras em um texto.</div>', unsafe_allow_html=True)
@@ -194,8 +196,7 @@ with tabs[6]:
             else:
                 st.info("ℹ️ Não sobraram palavras úteis para contar após a limpeza de stopwords e pontuação.")
 
-# ATIVIDADE 8
-with tabs[7]:
+elif opcao == "Atividade 8":
     st.subheader("Atividade 8: Intent Parser para Chatbot")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Um chatbot precisa identificar intenção do usuário em mensagens.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Crie regras para identificar intenções como “cancelar”, “comprar”, “suporte”.</div>', unsafe_allow_html=True)
@@ -215,8 +216,7 @@ with tabs[7]:
             else: 
                 st.info("❓ Intenção Desconhecida: A IA não conseguiu mapear o objetivo da frase baseado nas regras atuais.")
 
-# ATIVIDADE 9
-with tabs[8]:
+elif opcao == "Atividade 9":
     st.subheader("Atividade 9: Normalização de Textos")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Uma empresa quer limpar textos retirando pontuação e padronizando letras.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Normalize textos (minúsculas e sem pontuação).</div>', unsafe_allow_html=True)
@@ -229,8 +229,7 @@ with tabs[8]:
             resultado = re.sub(r'[^\w\s]', '', txt_9.lower())
             st.code(resultado)
 
-# ATIVIDADE 10
-with tabs[9]:
+elif opcao == "Atividade 10":
     st.subheader("Atividade 10: Classificação Simples (Positivo, Negativo, Neutro)")
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Uma empresa quer analisar feedbacks e classificar automaticamente mensagens em três categorias: positivo, negativo ou neutro.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Combine tokenização + regras condicionais para classificação simples.</div>', unsafe_allow_html=True)
