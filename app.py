@@ -2,6 +2,10 @@ import streamlit as st
 import re
 from collections import Counter
 
+# --- CONFIGURAÇÃO DA INTERFACE STREAMLIT ---
+# (Esta linha DEVE vir antes de qualquer outro comando do Streamlit, incluindo @st.cache_resource)
+st.set_page_config(page_title="NLP Lab - Aula 8", page_icon="🧠", layout="wide")
+
 # Importando as bibliotecas obrigatórias de PLN
 import nltk
 import spacy
@@ -37,9 +41,6 @@ try:
     nlp = iniciar_spacy()
 except Exception as e:
     nlp = spacy.blank("pt")
-
-# --- CONFIGURAÇÃO DA INTERFACE STREAMLIT ---
-st.set_page_config(page_title="NLP Lab - Aula 8", page_icon="🧠", layout="wide")
 
 # Estilização
 st.markdown("""
