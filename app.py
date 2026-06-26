@@ -81,7 +81,7 @@ with tabs[0]:
             elif score < 0: 
                 st.error("🔴 Sentimento: NEGATIVO")
             else: 
-                if c_pos == 0 e c_neg == 0:
+                if c_pos == 0 and c_neg == 0:
                     st.info("⚪ Sentimento: NEUTRO (Nenhuma palavra-chave de sentimento mapeada foi encontrada no texto).")
                 else:
                     st.warning("🟡 Sentimento: NEUTRO (Empate entre palavras positivas e negativas).")
