@@ -65,14 +65,26 @@ with tabs[0]:
 
     txt_1 = st.text_area("Comentário do cliente:", "Amei o produto! Foi sensacional.", key="act1")
     if st.button("Analisar Sentimento", key="btn1"):
-        tokens = nltk.word_tokenize(txt_1.lower())
-        pos_words = {"amei", "bom", "excelente", "ótimo", "sensacional"}
-        neg_words = {"ruim", "péssimo", "atrasou", "odiei"}
-        score = sum(1 for w in tokens if w in pos_words) - sum(1 for w in tokens if w in neg_words)
-        
-        if score > 0: st.success("🟢 Sentimento: POSITIVO")
-        elif score < 0: st.error("🔴 Sentimento: NEGATIVO")
-        else: st.warning("🟡 Sentimento: NEUTRO")
+        if not txt_1.strip():
+            st.warning("⚠️ Por favor, insira o comentário do cliente no campo acima antes de analisar.")
+        else:
+            tokens = nltk.word_tokenize(txt_1.lower())
+            pos_words = {"amei", "bom", "excelente", "ótimo", "sensacional"}
+            neg_words = {"ruim", "péssimo", "atrasou", "odiei"}
+            
+            c_pos = sum(1 for w in tokens if w in pos_words)
+            c_neg = sum(1 for w in tokens if w in neg_words)
+            score = c_pos - c_neg
+            
+            if score > 0: 
+                st.success("🟢 Sentimento: POSITIVO")
+            elif score < 0: 
+                st.error("🔴 Sentimento: NEGATIVO")
+            else: 
+                if c_pos == 0 e c_neg == 0:
+                    st.info("⚪ Sentimento: NEUTRO (Nenhuma palavra-chave de sentimento mapeada foi encontrada no texto).")
+                else:
+                    st.warning("🟡 Sentimento: NEUTRO (Empate entre palavras positivas e negativas).")
 
 # ATIVIDADE 2
 with tabs[1]:
@@ -82,8 +94,11 @@ with tabs[1]:
 
     txt_2 = st.text_area("Avaliação:", "O celular chegou perfeito, mas a tela está arranhada.", key="act2")
     if st.button("Executar Tokenização", key="btn2"):
-        tokens_list = nltk.word_tokenize(txt_2)
-        st.json(tokens_list)
+        if not txt_2.strip():
+            st.warning("⚠️ O campo de texto está vazio. Digite uma avaliação para tokenizar.")
+        else:
+            tokens_list = nltk.word_tokenize(txt_2)
+            st.json(tokens_list)
 
 # ATIVIDADE 3
 with tabs[2]:
@@ -93,12 +108,18 @@ with tabs[2]:
 
     txt_3 = st.text_input("Mensagem:", "Preciso da segunda via do meu boleto.", key="act3")
     if st.button("Classificar Atendimento", key="btn3"):
-        cartao_kw = ["bloquear", "cartão", "perdi"]
-        boleto_kw = ["segunda via", "boleto", "fatura"]
-        
-        if any(kw in txt_3.lower() for kw in cartao_kw): st.success("💳 Setor: Cartões")
-        elif any(kw in txt_3.lower() for kw in boleto_kw): st.info("🧾 Setor: Boletos e Faturamento")
-        else: st.warning("❓ Setor: Atendimento Geral")
+        if not txt_3.strip():
+            st.warning("⚠️ Insira a mensagem do cliente para realizar o roteamento.")
+        else:
+            cartao_kw = ["bloquear", "cartão", "perdi"]
+            boleto_kw = ["segunda via", "boleto", "fatura"]
+            
+            if any(kw in txt_3.lower() for kw in cartao_kw): 
+                st.success("💳 Setor: Cartões")
+            elif any(kw in txt_3.lower() for kw in boleto_kw): 
+                st.info("🧾 Setor: Boletos e Faturamento")
+            else: 
+                st.warning("❓ Setor: Atendimento Geral (Não identificamos palavras-chave de setores específicos).")
 
 # ATIVIDADE 4
 with tabs[3]:
@@ -108,9 +129,14 @@ with tabs[3]:
 
     txt_4 = st.text_area("Texto:", "O gerente da loja falou para o cliente que o prazo era de vinte dias.", key="act4")
     if st.button("Remover Stopwords", key="btn4"):
-        tokens = nltk.word_tokenize(txt_4)
-        filtrados = [w for w in tokens if w.lower() not in STOPWORDS_NLTK]
-        st.code(" ".join(filtrados), language="text")
+        if not txt_4.strip():
+            st.warning("⚠️ Insira o texto bruto para remover as stopwords.")
+        else:
+            tokens = nltk.word_tokenize(txt_4)
+            filtrados = [w for w in tokens if w.lower() not in STOPWORDS_NLTK]
+            if len(tokens) == len(filtrados):
+                st.info("ℹ️ Nenhuma stopword foi encontrada ou removida do texto original.")
+            st.code(" ".join(filtrados), language="text")
 
 # ATIVIDADE 5
 with tabs[4]:
@@ -120,13 +146,16 @@ with tabs[4]:
 
     txt_5 = st.text_area("Mensagem:", "O sistema deu um erro muito ruim hoje.", key="act5")
     if st.button("Escanear Mensagem", key="btn5"):
-        doc = nlp(txt_5.lower())
-        negativas = {"ruim", "erro", "péssimo", "horrível"}
-        encontrados = [t.text for t in doc if t.text in negativas]
-        if encontrados:
-            st.error(f"⚠️ Reclamação detectada! Termos: {list(set(encontrados))}")
+        if not txt_5.strip():
+            st.warning("⚠️ Digite uma mensagem do suporte para escanear.")
         else:
-            st.success("✅ Mensagem normal.")
+            doc = nlp(txt_5.lower())
+            negativas = {"ruim", "erro", "péssimo", "horrível"}
+            encontrados = [t.text for t in doc if t.text in negativas]
+            if encontrados:
+                st.error(f"⚠️ Reclamação detectada! Termos críticos: {list(set(encontrados))}")
+            else:
+                st.success("✅ Mensagem analisada e classificada como normal (Nenhum termo de reclamação mapeado foi identificado).")
 
 # ATIVIDADE 6
 with tabs[5]:
@@ -136,11 +165,14 @@ with tabs[5]:
 
     txt_6 = st.text_area("Texto corporativo:", "Carlos Silva assinou o contrato com a Google Brasil em São Paulo.", key="act6")
     if st.button("Extrair Entidades", key="btn6"):
-        doc = nlp(txt_6)
-        if doc.ents:
-            st.table([{"Entidade": ent.text, "Tipo": ent.label_} for ent in doc.ents])
+        if not txt_6.strip():
+            st.warning("⚠️ O campo está vazio. Forneça um texto para que a IA possa extrair entidades.")
         else:
-            st.warning("Nenhuma entidade detectada.")
+            doc = nlp(txt_6)
+            if doc.ents:
+                st.table([{"Entidade": ent.text, "Tipo": ent.label_} for ent in doc.ents])
+            else:
+                st.info("🔍 Análise concluída: Nenhuma entidade (Pessoa, Organização ou Local) foi reconhecida no texto pelo modelo.")
 
 # ATIVIDADE 7
 with tabs[6]:
@@ -150,10 +182,17 @@ with tabs[6]:
 
     txt_7 = st.text_area("Postagem viral:", "Muito bom o vídeo! O vídeo é incrível, muito bom mesmo.", key="act7")
     if st.button("Calcular Frequência", key="btn7"):
-        tokens = nltk.word_tokenize(re.sub(r'[^\w\s]', '', txt_7.lower()))
-        uteis = [w for w in tokens if w not in STOPWORDS_NLTK]
-        ranking = Counter(uteis).most_common()
-        st.table([{"Palavra": p, "Frequência": c} for p, c in ranking])
+        if not txt_7.strip():
+            st.warning("⚠️ Por favor, insira o conteúdo da postagem viral.")
+        else:
+            tokens = nltk.word_tokenize(re.sub(r'[^\w\s]', '', txt_7.lower()))
+            uteis = [w for w in tokens if w not in STOPWORDS_NLTK]
+            ranking = Counter(uteis).most_common()
+            
+            if ranking:
+                st.table([{"Palavra": p, "Frequência": c} for p, c in ranking])
+            else:
+                st.info("ℹ️ Não sobraram palavras úteis para contar após a limpeza de stopwords e pontuação.")
 
 # ATIVIDADE 8
 with tabs[7]:
@@ -161,13 +200,20 @@ with tabs[7]:
     st.markdown('<div class="problematic-box"><b>⚠️ Problemática:</b> Um chatbot precisa identificar intenção do usuário em mensagens.</div>', unsafe_allow_html=True)
     st.markdown('<div class="task-box"><b>🎯 Tarefa:</b> Crie regras para identificar intenções como “cancelar”, “comprar”, “suporte”.</div>', unsafe_allow_html=True)
 
-    txt_8 = st.text_input("Mensagem:", "Eu quero cancelar o meu plano.", key="act8")
+    txt_8 = st.text_input("Mensagem para o Chatbot:", "Eu quero cancelar o meu plano.", key="act8")
     if st.button("Processar Intenção", key="btn8"):
-        t = txt_8.lower()
-        if any(w in t for w in ["cancelar", "cancelamento"]): st.error("❌ Intenção: CANCELAR")
-        elif any(w in t for w in ["comprar", "preço"]): st.success("🛒 Intenção: COMPRAR")
-        elif any(w in t for w in ["suporte", "erro", "ajuda"]): st.warning("🛠️ Intenção: SUPORTE")
-        else: st.info("❓ Intenção Desconhecida")
+        if not txt_8.strip():
+            st.warning("⚠️ Digite a mensagem que o usuário enviou ao chatbot.")
+        else:
+            t = txt_8.lower()
+            if any(w in t for w in ["cancelar", "cancelamento"]): 
+                st.error("❌ Intenção: CANCELAR")
+            elif any(w in t for w in ["comprar", "preço", "adquirir"]): 
+                st.success("🛒 Intenção: COMPRAR")
+            elif any(w in t for w in ["suporte", "erro", "ajuda", "problema"]): 
+                st.warning("🛠️ Intenção: SUPORTE")
+            else: 
+                st.info("❓ Intenção Desconhecida: A IA não conseguiu mapear o objetivo da frase baseado nas regras atuais.")
 
 # ATIVIDADE 9
 with tabs[8]:
@@ -177,8 +223,11 @@ with tabs[8]:
 
     txt_9 = st.text_area("Texto bruto:", "Atenção!!! Você viu isso??? Sim, claro.", key="act9")
     if st.button("Higienizar", key="btn9"):
-        resultado = re.sub(r'[^\w\s]', '', txt_9.lower())
-        st.code(resultado)
+        if not txt_9.strip():
+            st.warning("⚠️ Insira um texto bruto para realizar a normalização.")
+        else:
+            resultado = re.sub(r'[^\w\s]', '', txt_9.lower())
+            st.code(resultado)
 
 # ATIVIDADE 10
 with tabs[9]:
@@ -188,13 +237,19 @@ with tabs[9]:
 
     txt_10 = st.text_area("Feedback:", "A loja física foi ok, o atendimento foi regular.", key="act10")
     if st.button("Classificar Feedback", key="btn10"):
-        tokens = nltk.word_tokenize(txt_10.lower())
-        pos = {"excelente", "ótimo", "bom", "gostei"}
-        neg = {"ruim", "péssimo", "horrível", "lento"}
-        
-        c_pos = sum(1 for t in tokens if t in pos)
-        c_neg = sum(1 for t in tokens if t in neg)
-        
-        if c_pos > c_neg: st.success("🟢 Feedback: POSITIVO")
-        elif c_neg > c_pos: st.error("🔴 Feedback: NEGATIVO")
-        else: st.warning("🟡 Feedback: NEUTRO")
+        if not txt_10.strip():
+            st.warning("⚠️ O campo de feedback está vazio.")
+        else:
+            tokens = nltk.word_tokenize(txt_10.lower())
+            pos = {"excelente", "ótimo", "bom", "gostei"}
+            neg = {"ruim", "péssimo", "horrível", "lento"}
+            
+            c_pos = sum(1 for t in tokens if t in pos)
+            c_neg = sum(1 for t in tokens if t in neg)
+            
+            if c_pos > c_neg: 
+                st.success("🟢 Feedback: POSITIVO")
+            elif c_neg > c_pos: 
+                st.error("🔴 Feedback: NEGATIVO")
+            else: 
+                st.warning("🟡 Feedback: NEUTRO (Informação: O sistema não detectou uma prevalência clara de palavras emocionais cadastradas no dicionário).")
